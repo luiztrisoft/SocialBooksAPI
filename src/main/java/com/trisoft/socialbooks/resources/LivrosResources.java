@@ -26,51 +26,35 @@ public class LivrosResources {
 	
 	@Autowired
 	private LivrosService livrosService;
+
+	@PostMapping
+	public ResponseEntity<Void> salvar(@RequestBody Livro livro) {
+		livro = livrosService.salvar(livro);	
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(livro.getId()).toUri();		
+		return ResponseEntity.created(uri).build();
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<Void> atualizar(@RequestBody Livro livro, @PathVariable("id") Long id) {
+		livro.setId(id);
+		livrosService.atualizar(livro);			
+		return ResponseEntity.noContent().build();		
+	}
 	
 	@GetMapping
 	public ResponseEntity<List<Livro>> listar() {
 		return ResponseEntity.status(HttpStatus.OK).body(livrosService.listar());
 	}
 	
-	@PostMapping
-	public ResponseEntity<Void> salvar(@RequestBody Livro livro) {
-		livro = livrosService.salvar(livro);	
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(livro.getId()).toUri();
-		
-		return ResponseEntity.created(uri).build();
-	}
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
-		Livro livro = null;
-		try {
-			livro = livrosService.buscar(id);			
-		} catch (Exception e) {
-			return ResponseEntity.notFound().build();
-		}
-		
-		return ResponseEntity.status(HttpStatus.OK).body(livro); 
+		Livro livro = livrosService.buscar(id);			
+		return ResponseEntity.status(HttpStatus.OK).body(livro);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deletar(@PathVariable("id") Long id) {
-		try {
-			livrosService.deletar(id);			
-		}catch (EmptyResultDataAccessException e) {
-			return ResponseEntity.notFound().build();
-		}		
+		livrosService.deletar(id);		
 		return ResponseEntity.noContent().build();
 	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<Void> atualizar(@RequestBody Livro livro, @PathVariable("id") Long id) {
-		livro.setId(id);
-		try {
-			livrosService.atualizar(livro);			
-		} catch (Exception e) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.noContent().build();		
-	}
-	
 }

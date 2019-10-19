@@ -36,8 +36,7 @@ public class LivrosService {
 		Livro livro = livrosRepository.findById(id).orElse(null);		
 		if(livro == null) {
 			throw new LivroNaoEncontradoException(LIVRO_NAO_ENCONTRADO);
-		}		
-		
+		}			
 		return livro;
 	}
 	
