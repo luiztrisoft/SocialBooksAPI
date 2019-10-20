@@ -1,12 +1,15 @@
 package com.trisoft.socialbooks.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.trisoft.socialbooks.domain.Comentario;
 import com.trisoft.socialbooks.domain.Livro;
+import com.trisoft.socialbooks.repository.ComentariosRepository;
 import com.trisoft.socialbooks.repository.LivrosRepository;
 import com.trisoft.socialbooks.services.exceptions.LivroNaoEncontradoException;
 
@@ -15,6 +18,9 @@ public class LivrosService {
 	
 	@Autowired
 	private LivrosRepository livrosRepository;
+	
+	@Autowired
+	private ComentariosRepository comentariosRepository;
 	
 	private final String LIVRO_NAO_ENCONTRADO = "O livro não foi encontrado.";
 	
@@ -46,6 +52,13 @@ public class LivrosService {
 		}catch (EmptyResultDataAccessException e) {
 			throw new LivroNaoEncontradoException(LIVRO_NAO_ENCONTRADO);
 		}
+	}
+	
+	public Comentario salvarComentario(Long livroId, Comentario comentario) {
+		Livro livro = buscar(livroId);		
+		comentario.setLivro(livro);
+		comentario.setData(LocalDate.now());		
+		return comentariosRepository.save(comentario);
 	}
 	
 	private void verificarExistencia(Livro livro) {

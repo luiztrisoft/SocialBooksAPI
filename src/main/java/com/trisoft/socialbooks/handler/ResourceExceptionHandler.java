@@ -13,7 +13,12 @@ import com.trisoft.socialbooks.services.exceptions.LivroNaoEncontradoException;
 @ControllerAdvice
 public class ResourceExceptionHandler {
 	
-	//Qualquer lugar da aplicação que lançar um LivroNaoEncontradoException será capturado
+	/**
+	 * Qualquer lugar da aplicação que lançar um LivroNaoEncontradoException será capturado 
+	 * @param e
+	 * @param request
+	 * @return
+	 */
 	@ExceptionHandler(LivroNaoEncontradoException.class)
 	public ResponseEntity<DetalhesErro> handleLivroNaoEncontradoException(LivroNaoEncontradoException e, HttpServletRequest request){
 		DetalhesErro erro = new DetalhesErro();
