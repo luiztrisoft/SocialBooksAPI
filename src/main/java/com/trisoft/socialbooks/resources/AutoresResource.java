@@ -3,6 +3,8 @@ package com.trisoft.socialbooks.resources;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,7 @@ public class AutoresResource {
 	private AutoresService autoresService;
 	
 	@PostMapping
-	public ResponseEntity<Void> salvar(@RequestBody Autor autor){
+	public ResponseEntity<Void> salvar(@Valid @RequestBody Autor autor){
 		autor = autoresService.salvar(autor);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(autor.getId()).toUri();
 		return ResponseEntity.created(uri).build();		
