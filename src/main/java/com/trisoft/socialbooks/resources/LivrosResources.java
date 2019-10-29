@@ -2,12 +2,16 @@ package com.trisoft.socialbooks.resources;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,8 +54,9 @@ public class LivrosResources {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
-		Livro livro = livrosService.buscar(id);			
-		return ResponseEntity.status(HttpStatus.OK).body(livro);
+		Livro livro = livrosService.buscar(id);		
+		CacheControl cacheControl = CacheControl.maxAge(45, TimeUnit.SECONDS);		
+		return ResponseEntity.status(HttpStatus.OK).cacheControl(cacheControl).body(livro);
 	}
 	
 	@DeleteMapping("/{id}")
@@ -62,6 +67,9 @@ public class LivrosResources {
 	
 	@PostMapping("/{id}/comentarios")
 	public ResponseEntity<Void> adicionarComentario(@PathVariable("id") Long livroId, @Valid @RequestBody Comentario comentario) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		comentario.setUsuario(auth.getName());
+		
 		livrosService.salvarComentario(livroId, comentario);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
 		return ResponseEntity.created(uri).build();
